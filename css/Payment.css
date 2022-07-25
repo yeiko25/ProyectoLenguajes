@@ -1,0 +1,15 @@
+.inlineimage {
+    max-width: 350px;
+    margin-left: 160px;
+    align-items: center;
+}
+
+.images {
+    display: inline-block;
+    max-width: 98%;
+    height: auto;
+    width: 22%;
+    margin: 1%;
+    left: 20px;
+    text-align: center
+}
