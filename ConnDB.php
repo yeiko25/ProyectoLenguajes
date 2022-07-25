@@ -6,7 +6,7 @@
         $user = "Y3IKO";
         $password = "yeiko2002";
 
-         $conection = oci_connect($user, $password, $server);
+         /* $conection = oci_connect($user, $password, $server);
 
           if (!$conection) {    
               $m = oci_error();    
@@ -14,6 +14,7 @@
              exit; 
            } else {    
              echo "Conexión con éxito a Oracle!"; } 
+             */
 
         return oci_connect($user, $password, $server);
     }
