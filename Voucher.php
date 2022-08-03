@@ -71,13 +71,21 @@ header ("Location: /ProyectoLenguajes/index.php");
 
         $link = ConnectDB();
 
-        $sql = "SELECT * FROM Usuarios WHERE EMAIL = '$ses'";
-        
-        $result = oci_parse($link, $sql);
+        $sql = "BEGIN MostrarCuenta(:correo, :cursor); END;";
 
-        oci_execute($result);
-        
-        $row = oci_fetch_assoc($result); 
+        $stmt = oci_parse($link, $sql); 
+
+        $cursor = oci_new_cursor($link);
+
+        oci_bind_by_name($stmt,":cursor",$cursor,-1,OCI_B_CURSOR);
+
+        oci_bind_by_name($stmt,":correo",$ses);
+
+        oci_execute($stmt);
+
+        oci_execute($cursor);
+
+        $row = oci_fetch_assoc($cursor);  
 
         date_default_timezone_set("America/Costa_Rica");
         ?>

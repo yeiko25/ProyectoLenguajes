@@ -10,13 +10,21 @@ $ses = $_SESSION['user'];
 
 $link = ConnectDB();
 
-$sql = "SELECT * FROM USUARIOS WHERE EMAIL = '$ses'";
+$sql = "BEGIN MostrarCuenta(:correo, :cursor); END;";
 
-$result = oci_parse($link, $sql);
+$stmt = oci_parse($link, $sql); 
 
-oci_execute($result);
+$cursor = oci_new_cursor($link);
 
-$row = oci_fetch_assoc($result); 
+oci_bind_by_name($stmt,":cursor",$cursor,-1,OCI_B_CURSOR);
+
+oci_bind_by_name($stmt,":correo",$ses);
+
+oci_execute($stmt);
+
+oci_execute($cursor);
+
+$row = oci_fetch_assoc($cursor); 
 
 ?>
 

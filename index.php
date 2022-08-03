@@ -112,29 +112,43 @@
                                     include 'Cart.php';
                                     
                                     $link = ConnectDB();
-                                    // $call = "SELECT * FROM Productos";
 
-                                    // $Products = oci_parse($link, $call); 
-                                    
-                                    // oci_execute($Products);
-                                
-                                    // $row = oci_fetch_assoc($Products); 
-                                    
-                                    $sql = "SELECT b.ID_PRODUCTO, b.NOMBREPRODUCTO, b.DESCRIPCION, b.PRECIO, b.IMG,  a.NOMBRECATEGORIA 
-                                    from Categorias a, Productos b where a.ID_CATEGORIA = b.ID_CATEGORIA
-                                    group by b.ID_PRODUCTO, b.NOMBREPRODUCTO, b.DESCRIPCION, b.PRECIO, b.IMG,  a.NOMBRECATEGORIA";
+                                    $sql = 'BEGIN PAQUETE.MostrarProductos(:cursor); END;';
 
-                                    $Products = oci_parse($link, $sql); 
-                                    
-                                    oci_execute($Products);
+                                    $stmt = oci_parse($link, $sql); 
+
+                                    $cursor = oci_new_cursor($link);
+
+                                    oci_bind_by_name($stmt,":cursor",$cursor,-1,OCI_B_CURSOR);
+
+                                    oci_execute($stmt);
+
+                                    oci_execute($cursor);
                                 
-                                    $row = oci_fetch_assoc($Products); 
+                                    $row = oci_fetch_assoc($cursor); 
                                     
+                                    //Categoria
+
+                                    $sql1 = 'BEGIN PAQUETE.MostrarCategoria(:cursor1); END;';
+                                    
+                                    $stmt1 = oci_parse($link, $sql1);
+
+                                    $cursor1 = oci_new_cursor($link);
+
+                                    oci_bind_by_name($stmt1,":cursor1",$cursor1,-1,OCI_B_CURSOR);
+
+                                    oci_execute($stmt1);
+
+                                    oci_execute($cursor1);
+
+                                    $row1 = oci_fetch_assoc($cursor1); 
+
+
+
                                     ?>
 
 
-
-                                <?php while($row = oci_fetch_assoc($Products)) { ?>
+                                <?php while($row = oci_fetch_assoc($cursor)) { ?>
 
 
 
@@ -147,7 +161,10 @@
                                     <div class="product-body">
                                         <p class="product-category">
 
-                                            <?php echo $row['NOMBRECATEGORIA'];?>
+                                            <?php 
+
+                                   
+                                            ?>
 
                                         </p>
                                         <h3 class="product-name"><a href="#"><?php echo $row['NOMBREPRODUCTO'];?></a>
@@ -282,22 +299,28 @@
                                 <?php
                                    
                                     
-                                    $link = ConnectDB();
-                                    $sql = "SELECT b.ID_PRODUCTO, b.NOMBREPRODUCTO, b.DESCRIPCION, b.PRECIO, b.IMG,  a.NOMBRECATEGORIA 
-                                    from Categorias a, Productos b where a.ID_CATEGORIA = b.ID_CATEGORIA
-                                    group by b.ID_PRODUCTO, b.NOMBREPRODUCTO, b.DESCRIPCION, b.PRECIO, b.IMG,  a.NOMBRECATEGORIA";
 
-                                    $Products = oci_parse($link, $sql); 
-                                    
-                                    oci_execute($Products);
+                                    $link = ConnectDB();
+
+                                    $sql = 'BEGIN PAQUETE.MostrarProductos(:cursor); END;';
+
+                                    $stmt = oci_parse($link, $sql); 
+
+                                    $cursor = oci_new_cursor($link);
+
+                                    oci_bind_by_name($stmt,":cursor",$cursor,-1,OCI_B_CURSOR);
+
+                                    oci_execute($stmt);
+
+                                    oci_execute($cursor);
                                 
-                                    $row = oci_fetch_assoc($Products);                      
+                                    $row = oci_fetch_assoc($cursor);         
                                     
                                     ?>
 
 
 
-                                <?php while($row = oci_fetch_assoc($Products)) { ?>
+                                <?php while($row = oci_fetch_assoc($cursor)) { ?>
 
 
 
@@ -308,7 +331,7 @@
                                             data-trigger="hover">
                                     </div>
                                     <div class="product-body">
-                                        <p class="product-category"><?php echo $row['NOMBRECATEGORIA'];?></p>
+                                        <p class="product-category"><?php //echo $row['NOMBRECATEGORIA'];?></p>
                                         <h3 class="product-name"><a href="#"><?php echo $row['NOMBREPRODUCTO'];?></a>
                                         </h3>
                                         <h4 class="product-price">$<?php echo $row['PRECIO'];?></h4>

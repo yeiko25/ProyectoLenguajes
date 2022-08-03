@@ -8,31 +8,48 @@ function EmailVER($email){
     
 $link = ConnectDB();
 
-$sql = "SELECT * FROM Usuarios WHERE EMAIL = '$email'";
+    $sql = "BEGIN VerificacionEmail(:correo, :cursor); END;";
 
-$email_verification = oci_parse($link, $sql);
+    $stmt = oci_parse($link, $sql);
 
-oci_execute($email_verification);
+    $cursor = oci_new_cursor($link);
 
+    oci_bind_by_name($stmt,":cursor",$cursor,-1,OCI_B_CURSOR);
 
-CloseDB($link);
+    oci_bind_by_name($stmt,":correo",$email);
+    
+    oci_execute($stmt);
 
-return oci_fetch_all($email_verification, $res);
+    oci_execute($cursor);
+
+    CloseDB($link);
+
+return oci_fetch_all($cursor, $res);
 
 }
 
 function UserVER($user){
 $link = ConnectDB();
 
-$sql = "SELECT * FROM Usuarios WHERE USUARIO = '$user' ";
+    $sql = "BEGIN VerificacionUsuario(:usuario_, :cursor); END;";
 
-$user_verification = oci_parse($link, $sql);
+    $stmt = oci_parse($link, $sql);
 
-oci_execute($user_verification);
+    $cursor = oci_new_cursor($link);
+
+    oci_bind_by_name($stmt,":cursor",$cursor,-1,OCI_B_CURSOR);
+
+    oci_bind_by_name($stmt,":usuario_",$user);
+    
+    oci_execute($stmt);
+
+    oci_execute($cursor);
+
+    CloseDB($link);
 
 CloseDB($link);
 
-return oci_fetch_all($user_verification, $res);
+return oci_fetch_all($cursor, $res);
 
 }
 

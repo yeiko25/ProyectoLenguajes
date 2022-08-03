@@ -101,7 +101,7 @@ if(isset($_POST["btnRegister"]))
             $call = oci_parse($link, $query);
             oci_execute($call);
             
-             echo ' <script type="text/javascript">
+              echo ' <script type="text/javascript">
             $(document).ready(function() {  
                 Swal.fire({
                     icon: "success",
@@ -111,6 +111,8 @@ if(isset($_POST["btnRegister"]))
                 document.location.href = "/ProyectoLenguajes/index.php";
                 })});
             </script>'; 
+
+            
             
             CloseDB($link);
             
