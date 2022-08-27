@@ -25,25 +25,10 @@ die();
 date_default_timezone_set("America/Costa_Rica");
 
 
-if(isset($_POST['btnPayPal'])){
-
-    echo ' <script type="text/javascript">
-    $(document).ready(function() {  
-        Swal.fire({
-            icon: "success",
-            title: "Success",
-            text: "Payment successfully."
-        }).then(function() {
-            document.location.href = "/ProyectoLenguajes/voucher.php";
-        })});
-    </script>'; 
-
-
-
-}
-
 
 if(isset($_POST['btnPay'])){
+
+
 
     if(isset($_POST['save']) && $_POST['save'] == '1'){
 
@@ -312,7 +297,7 @@ if(isset($_POST['btnPay'])){
     <div class="row">
         <div class="col-xs-12">
             <a href="voucher.php">
-                <button type='submit' class="btn btn-success btn-lg btn-block" name="btnPayPal" id="btnPayPal">Confirm
+                <button type='submit' class="btn btn-success btn-lg btn-block" name="btnPay" id="btnPay">Confirm
                     Payment</button>
             </a>
 

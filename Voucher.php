@@ -115,13 +115,13 @@ header ("Location: /ProyectoLenguajes/index.php");
 
         $d = date("d/m/Y");
         
-       // $sql_ = "CALL R_FACTURA('$n','$id_','$d')";
+        $sql_ = "CALL R_FACTURA('$n','$id_','$d')";
         
-       // $stmt_ = oci_parse($link, $sql_); 
+        $stmt_ = oci_parse($link, $sql_); 
         
-      //  oci_execute($stmt_); 
+       oci_execute($stmt_); 
         
-       // CloseDB($link);
+       CloseDB($link);
         
         ?>
 
@@ -188,17 +188,17 @@ header ("Location: /ProyectoLenguajes/index.php");
             </tbody>
         </table>
         <?php }
+ 
+         $link = ConnectDB();
         
-        /* $link = ConnectDB();
-        
-        $sql_1 = "CALL R_DETALLE('$n','$id_d','','$Total','$cant')";
+        $sql_1 = "CALL R_DETALLE('$n','$id_d', '1' ,'$Total','$cant')";
         
         $stmt_1 = oci_parse($link, $sql_1); 
         
         oci_execute($stmt_1); 
         
         CloseDB($link);
-        */
+        
         
         ?>
 
