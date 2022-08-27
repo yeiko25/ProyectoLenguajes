@@ -3,6 +3,7 @@ ob_start();
 include 'Cart.php';
 include 'ConnDB.php';
 
+
 date_default_timezone_set("America/Costa_Rica");
 
 if(!isset($_SESSION)){
@@ -17,7 +18,6 @@ header ("Location: /ProyectoLenguajes/index.php");
         header ("Location: /ProyectoLenguajes/index.php");  
     }
 }
-
 
 
 ?>
@@ -66,7 +66,8 @@ header ("Location: /ProyectoLenguajes/index.php");
     <br />
 
     <div class="container-fluid">
-        <?php 
+        <?php
+        
         $ses = $_SESSION['user'];
 
         $link = ConnectDB();
@@ -85,14 +86,18 @@ header ("Location: /ProyectoLenguajes/index.php");
 
         oci_execute($cursor);
 
-        $row = oci_fetch_assoc($cursor);  
+        $row = oci_fetch_assoc($cursor);
+        
+        $id_ = $row['ID_USUARIO'];
 
         date_default_timezone_set("America/Costa_Rica");
         ?>
 
         <?php  $id = rand(1, 10000); 
         $letter = chr(rand(65,90));
-        $n = $letter . $id?>
+        $n = $letter . $id;
+        ?>
+
 
         <h3>Voucher N°: <?php echo $n;?> </h3>
 
@@ -104,6 +109,22 @@ header ("Location: /ProyectoLenguajes/index.php");
                 <br />
             </div>
         </div>
+
+        <?php 
+        $link = ConnectDB();
+
+        $d = date("d/m/Y");
+        
+       // $sql_ = "CALL R_FACTURA('$n','$id_','$d')";
+        
+       // $stmt_ = oci_parse($link, $sql_); 
+        
+      //  oci_execute($stmt_); 
+        
+       // CloseDB($link);
+        
+        ?>
+
 
         <div class="row">
             <div class="col-md-6">
@@ -139,10 +160,14 @@ header ("Location: /ProyectoLenguajes/index.php");
                 <tr>
                     <td style="padding: 20px; text-align: center; border-bottom: 2px solid; border-right: 2px solid;"
                         width="40%">
-                        <?php echo $product['NAME']?></td>
+                        <?php
+                        $id_d = $product['ID'];
+                        echo $product['NAME']?></td>
                     <td style="padding: 20px; text-align: center; border-bottom: 2px solid; border-right: 2px solid;"
                         width="15%" class="text-center">
-                        <?php echo $product['QUANTITY']?></th>
+                        <?php 
+                        $cant = $product['QUANTITY'];
+                        echo $product['QUANTITY']?></th>
                     <td style="padding: 20px; text-align: center; border-bottom: 2px solid; border-right: 2px solid;"
                         width="20%" class="text-center">
                         $<?php echo $product['PRICE']?></td>
@@ -162,7 +187,20 @@ header ("Location: /ProyectoLenguajes/index.php");
                 </tr>
             </tbody>
         </table>
-        <?php }?>
+        <?php }
+        
+        /* $link = ConnectDB();
+        
+        $sql_1 = "CALL R_DETALLE('$n','$id_d','','$Total','$cant')";
+        
+        $stmt_1 = oci_parse($link, $sql_1); 
+        
+        oci_execute($stmt_1); 
+        
+        CloseDB($link);
+        */
+        
+        ?>
 
     </div>
 

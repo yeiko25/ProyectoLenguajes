@@ -1,5 +1,6 @@
 <?php 
- include 'templates/Header.php';  
+ include 'templates/Header.php';
+ include 'ConnDB.php';  
 
 
  if(!isset($_SESSION)){
@@ -24,10 +25,7 @@ die();
 date_default_timezone_set("America/Costa_Rica");
 
 
-
-
-
-if(isset($_POST['btnPay'])){
+if(isset($_POST['btnPayPal'])){
 
     echo ' <script type="text/javascript">
     $(document).ready(function() {  
@@ -38,21 +36,113 @@ if(isset($_POST['btnPay'])){
         }).then(function() {
             document.location.href = "/ProyectoLenguajes/voucher.php";
         })});
-    </script>';
+    </script>'; 
+
+
+
+}
+
+
+if(isset($_POST['btnPay'])){
+
+    if(isset($_POST['save']) && $_POST['save'] == '1'){
+
+        $ncard_ = $_POST["ncard"];
+
+        $searchString = " ";
+
+        $replaceString = "";
+    
+        $ncard = str_replace($searchString, $replaceString, $ncard_);
+
+        $cvv = $_POST["cvv"];
+
+        $owner = $_POST["owner"];
+
+        $month = $_POST["expiryMonth"];
+
+        $year = $_POST["expiryYear"];
+    
+        $date = "01/".$month."/".$year;
+       
+
+
+        //Obtener ID
+
+    $ses = $_SESSION['user'];
+
+    $link = ConnectDB();
+
+    $sql = "BEGIN MostrarCuenta(:correo, :cursor); END;";
+
+    $stmt = oci_parse($link, $sql); 
+
+    $cursor = oci_new_cursor($link);
+
+    oci_bind_by_name($stmt,":cursor",$cursor,-1,OCI_B_CURSOR);
+
+    oci_bind_by_name($stmt,":correo",$ses);
+
+    oci_execute($stmt);
+
+    oci_execute($cursor);
+
+    $row = oci_fetch_assoc($cursor);
+    
+    $id = $row['ID_USUARIO'];
+
+  //Insertar Info
+
+  
+  $query = "CALL REGISTRARTARJETA('$id','$owner', '$ncard', '$date', '$cvv')";
+  
+  $call = oci_parse($link, $query);
+
+  oci_execute($call);
+
+  CloseDB($link);
+  
+    }
+
+
+   echo ' <script type="text/javascript">
+    $(document).ready(function() {  
+        Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Payment successfully."
+        }).then(function() {
+            document.location.href = "/ProyectoLenguajes/voucher.php";
+        })});
+    </script>'; 
+    
     
     }
 
 ?>
 
 
+
+
 <form method="post">
     <div class="container">
-        <div class="page-header text-center">
+        <div class="text-center">
+            <div class="nav main-nav">
+                <ul>
+                    <li class="tab1 active">
+                        <a href="#card">Card</a>
+                    </li>
+                    <li class="tab">
+                        <a href="#Paypal">Paypal </a>
+                    </li>
+                </ul>
+
+            </div>
             <h4 style="color: grey;">
-                Add your debit or credit card to continue with the purchase</h4>
+                Add your payment information to continue with the purchase</h4>
         </div> <!-- Credit Card Payment Form - START -->
 
-        <div class="row">
+        <div class="row card">
             <div class="col-xs-12 col-md-6 col-md-offset-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -72,9 +162,9 @@ if(isset($_POST['btnPay'])){
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="form-group"> <label>CARD NUMBER</label>
-                                        <div class="input-group"> <input type="text" maxlength="19" required="required"
-                                                class="form-control" placeholder="Valid Card Number"
-                                                onkeypress='return formats(this,event)'
+                                        <div class="input-group"> <input id="ncard" name="ncard" type="text"
+                                                maxlength="19" required="required" class="form-control"
+                                                placeholder="Valid Card Number" onkeypress='return formats(this,event)'
                                                 onkeyup="return numberValidation(event)" pattern=".{19,19}" /> <span
                                                 class="input-group-addon"><span class="fa fa-credit-card"></span></span>
                                         </div>
@@ -90,15 +180,15 @@ if(isset($_POST['btnPay'])){
                                             <select id="expiryMonth" name="expiryMonth" style="height: 30px;"
                                                 required="required">
                                                 <option value=""></option>
-                                                <option value="1">January</option>
-                                                <option value="2">February </option>
-                                                <option value="3">March</option>
-                                                <option value="4">April</option>
-                                                <option value="5">May</option>
-                                                <option value="6">June</option>
-                                                <option value="7">July</option>
-                                                <option value="8">August</option>
-                                                <option value="9">September</option>
+                                                <option value="01">January</option>
+                                                <option value="02">February</option>
+                                                <option value="03">March</option>
+                                                <option value="04">April</option>
+                                                <option value="05">May</option>
+                                                <option value="06">June</option>
+                                                <option value="07">July</option>
+                                                <option value="08">August</option>
+                                                <option value="09">September</option>
                                                 <option value="10">October</option>
                                                 <option value="11">November</option>
                                                 <option value="12">December</option>
@@ -127,19 +217,25 @@ if(isset($_POST['btnPay'])){
                                     </div>
                                 </div>
                                 <div class="col-xs-5 col-md-5 pull-right">
-                                    <div class="form-group"> <label>CV CODE</label> <input type="password" minlength="3"
-                                            maxlength="3" required="required" onkeypress="return validateNumber(event)"
-                                            class="form-control" placeholder="CVC" />
+                                    <div class="form-group"> <label>CV CODE</label> <input id="cvv" name="cvv"
+                                            type="password" minlength="3" maxlength="3" required="required"
+                                            onkeypress="return validateNumber(event)" class="form-control"
+                                            placeholder="CVC" />
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-12">
-                                    <div class="form-group"> <label>CARD OWNER</label> <input type="int"
-                                            required="required" class="form-control"
+                                <div class="col-xs-12 col-md-12">
+                                    <div class="form-group"> <label>CARD OWNER</label> <input id="owner" name="owner"
+                                            type="int" required="required" class="form-control"
                                             onkeypress="return validateLetter(event)" placeholder="Card Owner Name"
                                             maxlength="50" />
                                     </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <input type="checkbox" class="form-check-input" id="save" name="save" value="1">
+                                    <label class="form-check-label" for="conditions"> Save payment information in my
+                                        account for future purchases.</label>
                                 </div>
                             </div>
                         </form>
@@ -163,6 +259,73 @@ if(isset($_POST['btnPay'])){
 </div>
 
 </div>
+
+
+
+
+<!-- PAYPAL -->
+
+<form method="post">
+    <div class="container">
+        <div class="row paypal">
+            <div class="col-xs-12 col-md-6 col-md-offset-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <h3 class="text-center">PAYPAL ACCOUNT</h3>
+                            <img style="height: 77px;  width: 77px; display: block; margin: auto; "
+                                class="img-responsive images"
+                                src="https://cdn2.iconfinder.com/data/icons/social-media-2304/64/19-paypal-256.png">
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group"> <label>PAYPAL EMAIL</label>
+                                        <div class="input-group"> <input id="pemail" name="pemail" type="email"
+                                                required="required" class="form-control" placeholder="Paypal Email" />
+                                            <span class="input-group-addon"><span class="fa fa-paypal"></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group"> <label>PASSWORD</label>
+                                        <div class="input-group"> <input id="ppass" name="ppass" type="password"
+                                                required="required" class="form-control"
+                                                placeholder="Paypal password" />
+                                            <span class="input-group-addon"><span class="fa fa-lock"></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+</form>
+</div>
+
+
+<div class="panel-footer">
+    <div class="row">
+        <div class="col-xs-12">
+            <a href="voucher.php">
+                <button type='submit' class="btn btn-success btn-lg btn-block" name="btnPayPal" id="btnPayPal">Confirm
+                    Payment</button>
+            </a>
+
+
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
 
 
 

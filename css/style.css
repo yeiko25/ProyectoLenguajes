@@ -654,7 +654,8 @@ textarea.input {
 \*----------------------------*/
 
 .main-nav>li+li {
-  margin-left: 30px
+  margin-left: auto;
+
 }
 
 .main-nav>li>a {

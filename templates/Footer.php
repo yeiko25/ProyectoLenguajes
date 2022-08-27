@@ -57,6 +57,7 @@
 <script src="js/nouislider.min.js"></script>
 <script src="js/jquery.zoom.min.js"></script>
 <script src="js/main.js"></script>
+<script src="js/payment.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(function() {
